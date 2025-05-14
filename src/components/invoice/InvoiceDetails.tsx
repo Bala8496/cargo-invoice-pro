@@ -1,3 +1,4 @@
+
 import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -167,8 +168,6 @@ const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({ invoice }) => {
               <tr className="border-b">
                 <th className="text-left pb-3">Description</th>
                 <th className="text-left pb-3">Vehicle</th>
-                <th className="text-right pb-3">Rate</th>
-                <th className="text-right pb-3">Qty</th>
                 <th className="text-right pb-3">Amount</th>
               </tr>
             </thead>
@@ -185,13 +184,11 @@ const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({ invoice }) => {
                         {item.vehicle.make} {item.vehicle.model}
                       </span>
                     </td>
-                    <td className="py-4 text-right">{formatCurrency(item.rate)}</td>
-                    <td className="py-4 text-right">{item.quantity}</td>
-                    <td className="py-4 text-right">{formatCurrency(item.rate * item.quantity)}</td>
+                    <td className="py-4 text-right">{formatCurrency(item.amount)}</td>
                   </tr>
                   
                   <tr>
-                    <td colSpan={5} className="py-2">
+                    <td colSpan={3} className="py-2">
                       {item.points.length > 0 && (
                         <div className="bg-gray-50 rounded-md p-4 my-2">
                           <h4 className="font-medium mb-2">Pickup & Delivery Points:</h4>

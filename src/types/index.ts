@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   email: string;
@@ -56,10 +55,9 @@ export interface InvoiceItem {
   description: string;
   vehicle: Vehicle;
   points: PickupDeliveryPoint[];
-  rate: number;
-  quantity: number;
+  amount: number; // Changed from rate/quantity to a single amount
   otherCharges: OtherCharge[];
-  subtotal: number; // Calculated: rate * quantity + sum(otherCharges)
+  subtotal: number; // Calculated: amount + sum(otherCharges)
 }
 
 export interface Invoice {

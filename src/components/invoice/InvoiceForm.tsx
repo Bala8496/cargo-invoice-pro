@@ -26,7 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { useData } from "@/contexts/DataContext";
-import { generateId, calculateItemSubtotal, calculateInvoiceTotals } from "@/lib/utils";
+import { generateId } from "@/lib/utils";
 import {
   InvoiceItem,
   Customer,
@@ -80,6 +80,20 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ editingInvoice }) => {
     }
   }, [editingInvoice]);
 
+  // Calculate item subtotal (amount + other charges)
+  const calculateItemSubtotal = (amount: number, otherCharges: OtherCharge[]): number => {
+    const otherChargesTotal = otherCharges.reduce((sum, charge) => sum + charge.amount, 0);
+    return amount + otherChargesTotal;
+  };
+
+  // Calculate invoice totals
+  const calculateInvoiceTotals = (items: InvoiceItem[]) => {
+    const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
+    const tax = subtotal * 0.1; // 10% tax
+    const total = subtotal + tax;
+    return { subtotal, tax, total };
+  };
+
   // Recalculate totals when items change
   useEffect(() => {
     setTotals(calculateInvoiceTotals(items));
@@ -91,8 +105,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ editingInvoice }) => {
       description: "",
       vehicle: {} as Vehicle,
       points: [],
-      rate: 0,
-      quantity: 1,
+      amount: 0,
       otherCharges: [],
       subtotal: 0,
     };
@@ -105,8 +118,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ editingInvoice }) => {
     
     // Recalculate subtotal
     newItems[index].subtotal = calculateItemSubtotal(
-      newItems[index].rate,
-      newItems[index].quantity,
+      newItems[index].amount,
       newItems[index].otherCharges
     );
     
@@ -169,8 +181,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ editingInvoice }) => {
     
     // Recalculate item subtotal
     newItems[itemIndex].subtotal = calculateItemSubtotal(
-      newItems[itemIndex].rate,
-      newItems[itemIndex].quantity,
+      newItems[itemIndex].amount,
       newItems[itemIndex].otherCharges
     );
     
@@ -183,8 +194,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ editingInvoice }) => {
     
     // Recalculate item subtotal
     newItems[itemIndex].subtotal = calculateItemSubtotal(
-      newItems[itemIndex].rate,
-      newItems[itemIndex].quantity,
+      newItems[itemIndex].amount,
       newItems[itemIndex].otherCharges
     );
     
@@ -427,31 +437,22 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ editingInvoice }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor={`rate-${index}`}>Rate</Label>
+                <Label htmlFor={`amount-${index}`}>Amount</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2">
                     $
                   </span>
                   <Input
-                    id={`rate-${index}`}
+                    id={`amount-${index}`}
                     type="number"
                     step="0.01"
                     className="pl-7"
-                    value={item.rate}
-                    onChange={(e) => updateItem(index, { rate: parseFloat(e.target.value) || 0 })}
+                    value={item.amount}
+                    onChange={(e) => updateItem(index, { amount: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={`quantity-${index}`}>Quantity</Label>
-                <Input
-                  id={`quantity-${index}`}
-                  type="number"
-                  value={item.quantity}
-                  onChange={(e) => updateItem(index, { quantity: parseInt(e.target.value) || 0 })}
-                />
               </div>
               <div className="space-y-2">
                 <Label>Subtotal</Label>
